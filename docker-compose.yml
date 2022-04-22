@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+
+  nginx:
+    container_name: nginx_container
+    build:
+      context: .
+      dockerfile: .docker/nginx/Dockerfile
+    image: sf-docker/nginx:dev
+    restart: on-failure
+    depends_on:
+      - php
+    volumes:
+      - 'code-volume:/app:nocopy'
+    ports:
+      - "80:80"
+      - '443:443'
+
+  db:
+    container_name: db_container
+    image: 'mariadb:10.4'
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'symfony_database'
+      MYSQL_USER: 'symfony_user'
+      MYSQL_PASSWORD: 'symfony123'
+      MYSQL_ROOT_PASSWORD: 'root2'
+    ports:
+      - '3306:3306'
+    volumes:
+      - 'code-volume:/app:nocopy'
+      - 'db-volume:/var/lib/mysql'
+
+  php:
+    container_name: php_container
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+    image: sf-docker/php:dev
+    restart: on-failure
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      PHP_DATE_TIMEZONE: ${PHP_DATE_TIMEZONE:-UTC}
+      PHP_IDE_CONFIG: serverName=localhost
+    depends_on:
+      - db
+    volumes:
+      - 'code-volume:/app:nocopy'
+
+volumes:
+  code-volume: {}
+  db-volume: {}

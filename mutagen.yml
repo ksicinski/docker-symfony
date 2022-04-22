@@ -1,0 +1,32 @@
+# Set up code synchronization.
+sync:
+  defaults:
+    flushOnCreate: true
+    mode: "two-way-resolved"
+    symlink:
+      mode: "portable"
+    permissions:
+      defaultFileMode: "0644"
+      defaultDirectoryMode: "0755"
+    configurationBeta:
+      permissions:
+        defaultOwner: 'www-data'
+        defaultGroup: 'www-data'
+  code:
+    alpha: "."
+    beta: "docker://php_container/app"
+    ignore:
+      paths:
+        - .docker
+        - .idea
+        - .github
+        - '*.tar.gz'
+        - docker-compose.yml
+        - mutagen.yml
+        - mutagen.yml.lock
+        - '.mutagen-*'
+        - /vendor
+        - node_modules
+  vendor:
+    alpha: "./vendor"
+    beta: "docker://php_container/app/vendor"
